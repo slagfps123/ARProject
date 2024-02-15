@@ -1,0 +1,266 @@
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js"></script>
+    <script src="index.js"></script>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+      }
+
+      .modal-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+      }
+
+      img {
+        max-width: 100%;
+        max-height: 100%;
+      }
+
+      .close {
+        position: absolute;
+        top: 86%;
+        right: 35px;
+        font-size: 25px;
+        color: #fff;
+        cursor: pointer;
+      }
+      
+      #myModal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      .modal-content {
+        max-width: 80%;
+        max-height: 80%;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .carousel-img {
+        width: 100%;
+        height: auto;
+      }
+
+      .prev, .next {
+        position: absolute;
+        top: 52%;
+        font-size: 45px;
+        color: #fff;
+        cursor: pointer;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+      }
+
+      .prev {
+        left: 8px;
+      }
+
+      .next {
+        right: 8px;
+      }
+
+      .hidden {
+        display: none;
+      }  
+  </style>
+
+  </head>
+  
+  <body>
+    <!--<div id="hiddenDiv" class="hidden">-->
+    <a-scene id="hiddenDiv" class="hidden" mindar-image="imageTargetSrc: assets/kahitkailan.mind; maxTrack: 2" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" update-distance>
+      
+      <a-assets>
+          <a-asset-item timeout="60000" id="squidModel" src="assets/Robot_1_Front_V2.glb"></a-asset-item>
+          <a-asset-item timeout="60000" id="robotModel" src="assets/Robot_2_Front_V2.glb"></a-asset-item>
+          <a-asset-item timeout="60000" id="squidBubble" src="assets/Robot1_ChatBubble.glb"></a-asset-item>
+          <a-asset-item timeout="60000" id="robotBubble" src="assets/Robot2_ChatBubble.glb"></a-asset-item>
+      </a-assets>
+
+      
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+      
+      <a-entity marker-robot id="marker-robot" mindar-image-target="targetIndex: 0">
+        
+        <!-- Robot Model -->
+        <a-gltf-model object-robot id="object-robot" rotation="0 0 0 " position="0 -0.15 0" src="#robotModel" animation-mixer>
+        </a-gltf-model>
+        
+        <!-- Speech Bubble Model -->
+        <!--<a-gltf-model visible="true" bubble-robot id="bubble-robot" position="0 0.08 0" scale="12 5 5" src="#bubbleModel" animation-mixer>
+        </a-gltf-model>-->
+        <a-gltf-model visible="false" bubblerobot id="bubblerobot" position="0 -0.12 0" src="#robotBubble" animation-mixer>
+        </a-gltf-model>
+        <!--<a-text visible="true" robot-text id="robot-text" value="" position="0 0.4 0" align="center" color="white" text="width: 1"></a-text>-->
+      </a-entity>
+
+      <a-entity marker-squid id="marker-squid" mindar-image-target="targetIndex: 1">      
+        <!-- Squid Model -->
+        <a-gltf-model object-squid id="object-squid" rotation="0 0 0 " position="0 -0.25 0" src="#squidModel" animation-mixer>
+        </a-gltf-model>
+        
+        <!-- Speech Bubble Model -->
+        <!--<a-gltf-model visible="true" bubble-squid id="bubble-squid" rotation="0 180 0" position="0 0.25 0" scale="13 5 5" src="#bubbleModel" animation-mixer>
+        </a-gltf-model>-->
+        <a-gltf-model visible="false" bubblesquid id="bubblesquid" position="0 -0.25 0" src="#squidBubble" animation-mixer>
+        </a-gltf-model>
+        <!--<a-text visible="true" squid-text id="squid-text" value="" position="0 0.56 0" align="center" color="white" text="width: 1.4"></a-text>-->
+      </a-entity>
+    </a-scene>
+    <!--</div>-->
+      
+    <div id="myModal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()" style="color: black;" id="loadDivButton">スキップ</span>
+        <button id="prev" class="prev" onclick="prevImage()" style="color: black; display: none;">&#10094;</button>
+        <button id="next" class="next" onclick="nextImage()" style="color: black;">&#10095;</button>
+        <img class="carousel-img" src="assets/1ONE.png" alt="Image 1">
+        <!-- Add more images as needed -->
+      </div>
+    </div>
+    <!--</div>-->
+    
+    <script>
+    var prev = document.getElementById('prev');
+    var next = document.getElementById('next');
+    var modal = document.getElementById('myModal');
+    var currentImageIndex = 0;
+    var count = 1;
+    var images = [
+      'assets/1ONE.png',
+      'assets/2TWO.png',
+      'assets/3THREE.png',
+      'assets/4FOUR.png'
+    ];
+
+    window.onload = function () {
+      modal.style.display = 'flex';
+      // console.log("currentImageIndex = ", currentImageIndex);
+      // console.log("imageLength = ", images.length);
+      // console.log("count = ", count);
+      showImage();
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+      
+    window.onclick = function (event) {
+      if (event.target == modal) {
+        closeModal();
+      }
+    }
+    function prevImage() {
+      count--;
+      currentImageIndex = (currentImageIndex - 1) % images.length;
+      // console.log("currentImageIndex = ", currentImageIndex);
+      // console.log("imageLength = ", images.length);
+      // console.log("count = ", count);
+      if (currentImageIndex == 0) {
+      prev.style.display = 'none';
+      showImage();
+      }
+      else {
+      showImage();
+      }
+    }
+
+    function nextImage() {
+      if (count == 4) {
+        closeModal();
+        hiddenDiv.style.display = 'block';
+      }     
+      currentImageIndex = (currentImageIndex + 1) % images.length;
+      // console.log("currentImageIndex = ", currentImageIndex);
+      // console.log("imageLength = ", images.length);
+      prev.style.display = 'block';
+      showImage();
+      count++;
+      // console.log("count = ", count);
+    }
+
+    // function nextImage() {
+
+    //   prev.style.display = 'block';
+    //   if (currentImageIndex == 4) {
+    //     console.log("currentImageIndex = ", currentImageIndex);
+    //   console.log("imageLength = ", images.length);
+
+    //     closeModal();
+    //     return
+    //   }else{
+    //     console.log("currentImageIndex = ", currentImageIndex);
+    //   console.log("imageLength = ", images.length);
+    //     currentImageIndex++;
+    //     showImage();
+    //   return;
+    //   }
+      
+    // }
+
+    function showImage() {
+      var imgElement = document.querySelector('.carousel-img');
+      imgElement.src = images[currentImageIndex];
+    }
+      
+    document.addEventListener('DOMContentLoaded', function() {
+      var loadDivButton = document.getElementById('loadDivButton');
+      var hiddenDiv = document.getElementById('hiddenDiv');
+
+      loadDivButton.addEventListener('click', function() {
+        hiddenDiv.style.display = 'block';
+      });
+    });
+      
+function loadScript() {
+    // Create a script element for the mind-ar library
+    //var mindArScript = document.createElement('script');
+    //mindArScript.src = 'https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js';
+    //document.body.appendChild(mindArScript);
+
+    //var aframeScript = document.createElement('script');
+    //aframeScript.src = 'https://aframe.io/releases/1.4.2/aframe.min.js'; // Add the additional script source here
+    //document.body.appendChild(aframeScript); 
+   
+    //var aframeEnvScript = document.createElement('script');
+    //aframeEnvScript.src = 'https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js'; // Add the additional script source here
+    //document.body.appendChild(aframeEnvScript); 
+}
+
+// Add a click event listener to the button
+document.getElementById('loadDivButton').addEventListener('click', loadScript);
+      
+</script>
+</body>
+</html>
